@@ -12,11 +12,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.HeadlessException;
-import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JDialog;
-import javax.swing.ImageIcon;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
@@ -24,8 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 
 public class Form1 extends JFrame {
     final Border border_def = BorderFactory.createCompoundBorder(
@@ -35,7 +31,9 @@ public class Form1 extends JFrame {
     final Font f1 = new Font("JetBrains Mono", Font.PLAIN, 13);
     Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
     JButton bt_run;
-    JLabel lb_info;
+    JLabel lb_points, lb_error;
+    JRadioButton[] rbt_dif = new JRadioButton[3];
+    TicTacToe game;
 
     public Form1(String title) throws HeadlessException {
         super(title);
@@ -50,12 +48,11 @@ public class Form1 extends JFrame {
         setPanel(p_main, (JPanel) getContentPane(),Color.lightGray, new BoxLayout(p_main, BoxLayout.Y_AXIS));
         JPanel p_game = new JPanel();
         setPanel(p_game, p_main, new Color(8817853),new GridLayout(3,3,10,10));
+        p_game.setPreferredSize(new Dimension(500,4000));
         p_game.setBorder(border_def);
         JPanel p_input = new JPanel();
         setPanel(p_input,p_main,Color.LIGHT_GRAY,new BoxLayout(p_input,BoxLayout.X_AXIS));
         p_input.setBorder(border_def);
-        //Game
-
         //Form
         JPanel p_form = new JPanel();
         setPanel(p_form,p_input,Color.LIGHT_GRAY,new GridBagLayout());
@@ -69,21 +66,25 @@ public class Form1 extends JFrame {
         p_form.add(new JLabel("<html><h1>TIC TAC TOE</h1></html>") {{setFont(fh); }} , gbc);
         bt_run = setButton("Jugar",p_form,this::gameState, gbc);
         JFrame self = this;
-        JButton bt_info = setButton("Info", p_form, () -> showInfo(self), gbc);
+        setButton("Info", p_form, () -> showInfo(self), gbc);
+        lb_error = new JLabel(" "){{setFont(f1); setForeground(new Color(4544926));}};
+        p_form.add(lb_error, gbc);
 
         JPanel p_form2 = new JPanel();
         setPanel(p_form2,p_input,Color.LIGHT_GRAY,new GridBagLayout());
         String[] dif = {"Fácil", "Medio", "Difícil"};
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < 3; i++){
-            JRadioButton r = i != 0 ? new JRadioButton(dif[i]) : new JRadioButton(dif[i],true);
-            r.setActionCommand(dif[0]);
-            r.setBackground(Color.LIGHT_GRAY);
-            group.add(r);
-            p_form2.add(r,gbc);
+            rbt_dif[i] = i != 0 ? new JRadioButton(dif[i]) : new JRadioButton(dif[i],true);
+            rbt_dif[i].setActionCommand(dif[i]);
+            rbt_dif[i].setBackground(Color.LIGHT_GRAY);
+            group.add(rbt_dif[i]);
+            p_form2.add(rbt_dif[i],gbc);
         }
-        lb_info = new JLabel("Puntaje: 0") {{setFont(f1);}};
-        p_form2.add(lb_info,gbc);
+        lb_points = new JLabel("Puntaje: 0") {{setFont(f1);}};
+        p_form2.add(lb_points,gbc);
+        //Game
+        game = new TicTacToe(p_game,group, lb_error, lb_points, bt_run, rbt_dif);
     }
 
     protected void showInfo(JFrame parent) {
@@ -121,7 +122,7 @@ public class Form1 extends JFrame {
     }
 
     protected void gameState(){
-        return;
+        game.gameState();
     }
 
 }
