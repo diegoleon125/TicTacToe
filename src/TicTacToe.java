@@ -5,7 +5,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.Timer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.Color;
@@ -73,11 +72,6 @@ public class TicTacToe {
         return list;
     }
 
-    public void addInHash(String current, double qant, int index){
-        String b = getLowerBoard(current);
-        boards.putIfAbsent(b,qant);
-        indexes.putIfAbsent(b,index);
-    }
 
     public boolean isFull(){
         return !getTextBoard().contains("-");
@@ -118,20 +112,19 @@ public class TicTacToe {
         can_play = !can_play;
         if (hasWon(player,getTextBoard())) {
             scr = mount * 10;
+            new_score += scr;
             end(player ? 1 : -1);
         } else if (isFull()) {
             end(0);
         } else {
             scr = mount;
+            new_score += scr;
             turn();
         }
-        new_score += scr;
     }
     public void turn(){
         for( JButton bt : btns){
-            if (bt.getText().equals("-")) {
-                bt.setEnabled(can_play);
-            }
+            if (bt.getText().equals("-")) bt.setEnabled(can_play);
         }
         if (can_play){
             info.setForeground(new Color(4544926));
@@ -150,10 +143,12 @@ public class TicTacToe {
         if (isFull()) {
             end(0);
         } else {
-            switch (diff.getSelection().getActionCommand()){
-                case "Fácil": easy(); break;
-                case "Medio": medium(); break;
-                case "Difícil": hard(); break;
+            if (!canWin()){
+                switch (diff.getSelection().getActionCommand()){
+                    case "Fácil": easy(); break;
+                    case "Medio": medium(); break;
+                    case "Difícil": hard(); break;
+                }
             }
             bt_run.setEnabled(true);
         }
@@ -165,53 +160,67 @@ public class TicTacToe {
         mark(false,list.get(index));
     }
     public void medium(){
-        if (!canWin()){
-            boards.clear();
-            indexes.clear();
-            System.out.println("current: " + getTextBoard());
-            seekVictory(getTextBoard(),0,-1);
-
-            //System.out.println("boards: " + boards.toString());
-            String[] keys = boards.keySet().toArray(new String[0]);
-            //System.out.println("indexes: " + indexes.toString());
-            if (keys.length == 0){
-                easy();
-            } else {
-                //System.out.println("keys: " + Arrays.toString(keys));
-                String randkey = keys[(int) (Math.random() * keys.length)];
-                mark(false,indexes.get(randkey));
-            }
+        boards.clear();
+        indexes.clear();
+        seekVictory(getTextBoard(),0,-1);
+        String[] keys = boards.keySet().toArray(new String[0]);
+        if (keys.length == 0){
+            easy();
+        } else {
+            String randkey = keys[(int) (Math.random() * keys.length)];
+            mark(false,indexes.get(randkey));
         }
     }
     public void hard(){
-
+        double best_ph = -1;
+        int best_v = -1;
+        String current = getTextBoard();
+        for (int v : getEmptyList(current)){
+            char[] ar = current.toCharArray();
+            ar[v] = 'O';
+            double val = findVictory(new String(ar), true, 1);
+            if (val > best_ph){
+                best_ph = val;
+                best_v = v;
+            }
+        }
+        mark(false,best_v);
     }
     public void seekVictory(String current, double qant, int index){
-        if (boards.values().stream().anyMatch(val -> val < qant)) {
-            return;
-        }
+        if (boards.values().stream().anyMatch(val -> val < qant)) return;
         if (hasWon(true,current)){
             if (boards.values().stream().anyMatch(val -> val > qant)) {
                 boards.clear();
                 indexes.clear();
             }
-            addInHash(current,qant,index);
-            System.out.println("win in: " + current);
+            String b = getLowerBoard(current);
+            boards.putIfAbsent(b,qant);
+            indexes.putIfAbsent(b,index);
         } else {
-            ArrayList<Integer> list = getEmptyList(current);
             if (boards.values().stream().noneMatch(val -> val < qant)){
-                for (int v : list){
+                for (int v : getEmptyList(current)){
                     char[] ar = current.toCharArray();
                     ar[v] = 'X';
                     String newcurrent = new String(ar);
                     int newindex = index == -1? v : index;
-                    //System.out.println("b" + i + ": " + newcurrent);
                     seekVictory(newcurrent,qant + 1, newindex);
                 }
             }
         }
     }
-
+    public double findVictory(String current, boolean player, int depth){
+        if (hasWon(false, current)) return 10 - depth;
+        if (hasWon(true, current)) return depth - 10;
+        if (getEmptyList(current).isEmpty()) return 0;
+        double best = player ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+        for (int v : getEmptyList(current)) {
+            char[] ar = current.toCharArray();
+            ar[v] = player ? 'X' : 'O';
+            double val = findVictory(new String(ar), !player, depth + 1);
+            best = player ? Math.min(best, val) : Math.max(best, val);
+        }
+        return best;
+    }
 
     public void gameState(){
         is_running = !is_running;
@@ -238,10 +247,11 @@ public class TicTacToe {
     public void end(int winner ){
         info.setForeground(new Color(0xB723F3));
         String text = switch(winner){
-            case -1 -> "Perdiste!";
-            case 1 -> "Ganaste!";
+            case -1 -> "Perdiste! ";
+            case 1 -> "Ganaste! ";
             default -> "Fin del juego!";
         };
+        if (winner != 0) text += (winner > 0? "+": "") + (winner * new_score);
         info.setText(text);
         is_running = false;
         bt_run.setText("Jugar");

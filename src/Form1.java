@@ -25,7 +25,7 @@ import javax.swing.border.Border;
 
 public class Form1 extends JFrame {
     final Border border_def = BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.BLACK,10),
+            BorderFactory.createLineBorder(new Color(0xB3000000, true),10),
             BorderFactory.createEmptyBorder(10,15,10,15));
     final Font fh = new Font("JetBrains Mono", Font.BOLD, 13);
     final Font f1 = new Font("JetBrains Mono", Font.PLAIN, 13);
@@ -95,9 +95,13 @@ public class Form1 extends JFrame {
         info.setMinimumSize(new Dimension(800, 300));
 
         JPanel p_main = new JPanel();
-        setPanel(p_main, (JPanel) info.getContentPane(), Color.LIGHT_GRAY, new GridLayout(4, 1, 5, 5));
+        setPanel(p_main, (JPanel) info.getContentPane(), Color.LIGHT_GRAY, new GridLayout(5, 1, 5, 5));
+        p_main.setBorder(border_def);
 
         String[] tx = {"Este programa permite jugar al clasico juego de Tic Tac Toe.",
+                "Fácil: Selección aleatoria de posición. (10p x turno)",
+                "Medio: Depth-First Search y Branch-and-bound. (50p x turno)",
+                "Difícil: Minimax personalizado. (100p x turno)",
                 "<html><i>Desarrollado por <b>Diego León</b> © 2026</i></html>"};
 
         for (String t : tx) {
