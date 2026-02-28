@@ -1,9 +1,11 @@
 /*
  * Proyecto: Gestor de Capital en Listas (Archivos)
  * Autor: Diego León
- * Fecha: 2026-
+ * Fecha: 2026-02-27
  */
+
 import javax.swing.SwingUtilities;
+
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

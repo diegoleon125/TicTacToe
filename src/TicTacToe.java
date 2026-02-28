@@ -1,3 +1,7 @@
+/*
+ * Clase del juego
+ * Autor: Diego León
+ */
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -104,7 +108,7 @@ public class TicTacToe {
 
 
     public void mark(boolean player, int btn){
-        int scr = 0;
+        int scr;
         if (btns[btn].getText().equals("-")) {
             String val = player ? "X" : "O";
             btns[btn].mark(val,player? Color.BLUE : Color.RED);

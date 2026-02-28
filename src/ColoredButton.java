@@ -1,3 +1,7 @@
+/*
+ * Clase para los botones
+ * Autor: Diego León
+ */
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.FontMetrics;

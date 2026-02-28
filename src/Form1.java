@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
+import javax.swing.ImageIcon;
+import java.util.Objects;
 
 public class Form1 extends JFrame {
     final Border border_def = BorderFactory.createCompoundBorder(
@@ -37,8 +39,8 @@ public class Form1 extends JFrame {
 
     public Form1(String title) throws HeadlessException {
         super(title);
-        //ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/icon.png")));
-        //setIconImage(icon.getImage());
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon.png")));
+        setIconImage(icon.getImage());
         setSize(500,500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation((s.width - 500)/2, (s.height - 500)/2 );
